@@ -37,7 +37,7 @@ regd_users.post("/login", (req,res) => {
         req.session.authorization = {
             accessToken, username
         }
-        return res.status(200).send({message: `User '${username}' successfully logged in with access token '${accessToken}'.`})
+        return res.status(200).send({message: `User successfully logged in.`})
     } else {
         return res.status(208).json({message: "Invalid Login. Check username and password"})
     }
@@ -47,7 +47,8 @@ regd_users.post("/login", (req,res) => {
 regd_users.put("/auth/review/:isbn", (req, res) => {
 
     const user = req.session.authorization.username
-    const review = req.body.review
+    const review = req.params.review
+    // const review = req.body.review
     const isbn = req.params.isbn
 
     let book = books[isbn]
@@ -55,7 +56,9 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     if (book) {
         book.reviews[user] = {review: review}
 
-        return res.status(200).send({book: book}, null, 2)
+        return res.status(200).send(`The review for the book with ISBN '${isbn}' has been added or updated.`)
+
+        // return res.status(200).send({book: book}, null, 2)
     } else {
         return res.status(208).json({message: "Book not found!"})
     } 
@@ -73,7 +76,9 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
         if (book.reviews[user]) {
             delete book.reviews[user]
 
-            return res.status(200).send({book: book}, null, 2)
+            return res.status(200).send(`The reviews for the book with ISBN '${isbn}' bx user '${user}' has been deleted.`)
+
+            // return res.status(200).send({book: book}, null, 2)
         } else {
             return res.status(208).json({message: `There is not a rview from '${user}'`})
         }
