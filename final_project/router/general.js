@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios');
 let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
@@ -33,23 +34,37 @@ public_users.post("/register", (req,res) => {
     return res.status(404).json({message: "Unable to register user."});
 });
 
+
+
+
+
+
+
+
+
+
+
+
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
 
-    let allBooks = new Promise((resolve, reject) => {
-        setTimeout(() => {
-            if (books) {
-                resolve({books: books},null,2);
-            } else {
-                reject({message: 'Books not found!'});
-            }
-        }, 1000);
+    const allBooks = new Promise((resolve, reject) => {
+        axios.get(`http://localhost:5000/`)
+            .then(response => resolve(response.data))
+            .catch(error => reject(error));
     });
 
     allBooks
-        .then(result => res.send(result))
-        .catch(error => res.send(error));
+        .then(data => res.status(200).json(data))
+        .catch(error => res.status(500).json({message: `Error by finding the books!`, error: error}));
 });
+
+
+
+
+
+
+
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
