@@ -24,7 +24,7 @@ public_users.post("/register", (req,res) => {
     if (username && password) {
         if (!doesExist(username)) {
             users.push({"username": username, "password": password});
-            return res.status(200).json({message: `User '${username}' successfully registered.`});
+            return res.status(200).json({message: `User successfully registered. Now you can login.`});
         } else {
             return res.status(404).json({message: "User already exists!"});
         }
@@ -39,7 +39,7 @@ public_users.get('/',function (req, res) {
     let allBooks = new Promise((resolve, reject) => {
         setTimeout(() => {
             if (books) {
-                resolve(books,null,2);
+                resolve({books: books},null,2);
             } else {
                 reject({message: 'Books not found!'});
             }
@@ -75,10 +75,21 @@ public_users.get('/author/:author',function (req, res) {
 
     let bookAuthor = new Promise((resolve, reject) => {
         setTimeout(() => {
-            let response = {}
+            // let response = {}
+
+            let response = {"booksByAuthor": []}
 
             for (const [key, value] of Object.entries(books)) {
+
                 if (value.author == req.params.author) {
+                    response["booksByAuthor"].push({
+                        title: value.title,
+                        isbn: key,
+                        reviews: value.reviews
+                    });
+                }
+
+                /* if (value.author == req.params.author) {
                     response = {
                         ...response,
                         [key]: {
@@ -87,7 +98,7 @@ public_users.get('/author/:author',function (req, res) {
                             reviews: value.reviews
                         }
                     }
-                }
+                } */
             }
 
             if (Object.keys(response).length === 0) {
@@ -108,11 +119,21 @@ public_users.get('/title/:title',function (req, res) {
 
     let bookTitle = new Promise((resolve, reject) => {
         setTimeout(() => {
-            let response = {}
+            // let response = {}
+            
+            let response = {"booksByTitle": []}
 
             for (const [key, value] of Object.entries(books)) {
 
                 if (value.title == req.params.title) {
+                    response["booksByTitle"].push({
+                        title: value.title,
+                        isbn: key,
+                        reviews: value.reviews
+                    });
+                }
+
+                /* if (value.title == req.params.title) {
                     response = {
                         ...response,
                         [key]: {
@@ -121,7 +142,7 @@ public_users.get('/title/:title',function (req, res) {
                             reviews: value.reviews
                         }
                     }
-                }
+                } */
             }
 
             if (Object.keys(response).length === 0) {
@@ -141,7 +162,8 @@ public_users.get('/title/:title',function (req, res) {
 public_users.get('/review/:isbn',function (req, res) {
     const isbn = req.params.isbn
 
-    res.send({reviews: books[isbn].reviews});
+    res.send(books[isbn].reviews);
+    // res.send({reviews: books[isbn].reviews});
 });
 
 module.exports.general = public_users;
